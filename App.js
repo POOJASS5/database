@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import MoviesList from "./components/MoviesList";
 import "./App.css";
+import Form from "./components/Form";
 
 let timeoutId;
 function App() {
@@ -8,7 +9,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRetrying, setIsRetrying] = useState(false);
-
   const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -38,13 +38,10 @@ function App() {
     }
     setIsLoading(false);
   }, []);
-
   useEffect(() => {
     fetchMoviesHandler();
   }, [fetchMoviesHandler]);
-
   let content = <h1>Found no movies...!</h1>;
-
   if (movies.length > 0) {
     content = <MoviesList movies={movies} />;
   }
@@ -61,6 +58,7 @@ function App() {
   };
   return (
     <React.Fragment>
+      <Form />
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
         {isRetrying && <button onClick={retryingHandler}>Stop Retrying</button>}
