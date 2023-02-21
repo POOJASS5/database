@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import MoviesList from "./components/MoviesList";
 import "./App.css";
+
+let timeoutId;
 function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  let timeoutId;
-
-  const fetchMoviesHandler = async () => {
+  const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -20,7 +20,6 @@ function App() {
         );
       }
       const data = await response.json();
-
       const transformedMovies = data.results.map((movieData) => {
         return {
           id: movieData.episode_id,
@@ -38,22 +37,23 @@ function App() {
       }, 5000);
     }
     setIsLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchMoviesHandler();
+  }, [fetchMoviesHandler]);
 
   let content = <h1>Found no movies...!</h1>;
 
   if (movies.length > 0) {
     content = <MoviesList movies={movies} />;
   }
-
   if (error) {
     content = <h1>{error}</h1>;
   }
-
   if (isLoading) {
     content = <h1>Loading...</h1>;
   }
-
   const retryingHandler = () => {
     clearTimeout(timeoutId);
     setIsRetrying(false);
